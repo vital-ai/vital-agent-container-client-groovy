@@ -2,4 +2,7 @@
 target/*
 /vitalhome/vital-domain/
 **/.DS_Store
+.classpath
+.project
+.settings/*
 

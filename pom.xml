@@ -229,16 +229,25 @@
 
    
 
-
-
-
-	<!-- DOMAINS START -->
+	<!--
 
 	<dependency>
       <groupId>vitalai-com</groupId>
       <artifactId>chat-ai</artifactId>
       <version>0.1.0</version>
     </dependency>
+
+	-->
+	
+
+	<!-- DOMAINS START -->
+
+	<dependency>
+		<groupId>vitalai-com</groupId>
+		<artifactId>vital-aimp</artifactId>
+		<version>0.1.0</version>
+		<scope>provided</scope>
+	</dependency>
 
 	<dependency>
       <groupId>vital-ai</groupId>
