@@ -4,6 +4,8 @@ import javax.websocket.Endpoint
 import javax.websocket.EndpointConfig
 import javax.websocket.Session
 import org.glassfish.tyrus.client.ClientManager
+import ai.vital.agent.container.client.api.AgentMessageHandler
+import ai.vital.vitalservice.VitalService
 import javax.websocket.ClientEndpointConfig
 import javax.websocket.CloseReason
 import org.slf4j.Logger
@@ -29,23 +31,53 @@ class VitalAgentContainerClient extends Endpoint {
 	
 	private Closure onErrorClosure = null
 	
-	private Closure onMessageClosure = null
+	private AgentMessageHandler agentMessageHandler
+		
+	private VitalService vitalService = null
+	
+	private MessageHandler messageHandler
 	
 	
-	public VitalAgentContainerClient(String endpoint, Closure onOpenClosure, Closure onCloseClosure, Closure onMessageClosure, Closure onErrorClosure) {
+	public VitalAgentContainerClient(String endpoint, Closure onOpenClosure, Closure onCloseClosure, Closure onErrorClosure, AgentMessageHandler agentMessageHandler) {
 		
 		endpointString = endpoint
 		
 		this.onOpenClosure = onOpenClosure
 		
 		this.onCloseClosure = onCloseClosure
-		
-		this.onMessageClosure = onMessageClosure
-		
+				
 		this.onErrorClosure = onErrorClosure
+		
+		this.agentMessageHandler = agentMessageHandler
 				
 	}
 
+	public void setAgentVitalService(VitalService vitalService) {
+		
+		this.vitalService = vitalService
+		
+		if (this.messageHandler != null) {
+			
+			this.messageHandler.setAgentVitalService(vitalService)
+		}
+	}
+	
+	public VitalService getAgentVitalService() {
+		
+		return this.vitalService
+		
+	}
+	
+	public void clearAgentVitalService() {
+		
+		this.vitalService = null
+		
+		if (this.messageHandler != null) {
+			
+			this.messageHandler.setAgentVitalService(null)
+		}
+	}
+	
 	public void connect() {
 		
 		try {
@@ -137,36 +169,13 @@ class VitalAgentContainerClient extends Endpoint {
 	}
 	
 	private void setupMessageHandler(Session session) {
-		session.addMessageHandler(String.class, new MessageHandler(session, onMessageClosure))
+		
+		messageHandler = new MessageHandler(session, this.agentMessageHandler)
+		
+		messageHandler.setAgentVitalService(this.vitalService)
+		
+		session.addMessageHandler(String.class, messageHandler)
 	}
 }
 
-
-class MessageHandler implements javax.websocket.MessageHandler.Whole<String> {
-
-	private final static Logger log = LoggerFactory.getLogger( MessageHandler.class)
-	
-	private final Session session = null
-
-	private Closure onMessageClosure = null
-	
-	MessageHandler(Session session, Closure onMessageClosure) {
-		
-		this.session = session
-		
-		this.onMessageClosure = onMessageClosure
-	}
-
-	@Override
-	void onMessage(String message) {
-		
-		log.info("Received Message: " + message)
-		
-		if(onMessageClosure) {
-			
-			onMessageClosure(session, message)
-		}
-		
-	}
-}
 
