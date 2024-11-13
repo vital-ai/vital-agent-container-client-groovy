@@ -103,6 +103,7 @@ class MessageHandler implements javax.websocket.MessageHandler.Whole<String> {
 				
 			}
 			
+			// service objects
 			if(agent_upsert_objects) {
 				
 				
@@ -121,6 +122,12 @@ class MessageHandler implements javax.websocket.MessageHandler.Whole<String> {
 				
 				
 			}
+			
+			// TODO
+			// agent_query_objects (from service)
+			// agent_get_objects (from service)
+			
+			
 			
 			
 			// not API case
